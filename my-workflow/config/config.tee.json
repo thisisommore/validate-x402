@@ -1,0 +1,6 @@
+{
+  "watchedAddresses": [],
+  "workflowPublicKey": "61e46b713217abe9fcdc367683c8c26802c19b2b5e113afd815879671b543074",
+  "apiUrl": "http://localhost:3457/verify",
+  "apiPublicKey": "dea3f038de9f286dcedd883809f757252905522d23af9a0570bf7da035709430"
+}
