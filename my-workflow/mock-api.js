@@ -15,7 +15,7 @@ const PUBKEY = process.env.WRONG_PUBKEY
   : process.env.API_PUBKEY || cfg.apiPublicKey;
 const MAX_SKEW_MS = 60_000;
 
-const IMAGES = ["paint_high_small.png", "paint_low_small.png"].map((name) => ({
+const IMAGES = ["paint_high_color.png", "paint_low_color.png"].map((name) => ({
   name,
   data: readFileSync(new URL(`./test-images/${name}`, import.meta.url)),
 }));
@@ -78,5 +78,7 @@ const server = createServer((req, res) => {
 
 const PORT = process.env.PORT || 3457;
 server.listen(PORT, () =>
-  console.log(`mock API on :${PORT}, expecting pubkey ${PUBKEY.slice(0, 16)}...`),
+  console.log(
+    `mock API on :${PORT}, expecting pubkey ${PUBKEY.slice(0, 16)}...`,
+  ),
 );
