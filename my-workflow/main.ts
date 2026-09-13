@@ -8,6 +8,7 @@ import {
   text,
   bytesToHex,
   hexToBytes,
+  bytesToBase64,
 } from "@chainlink/cre-sdk";
 import type { APIPayload, ValidateX402OPayload } from "./types/types";
 import { ed25519 } from "@noble/curves/ed25519.js";
@@ -46,7 +47,7 @@ const callApi = (runtime: Runtime, api: APIPayload): string => {
       body: api.body,
     })
     .result();
-  return text(response);
+  return bytesToBase64(response.body);
 };
 
 const validateApi = async (
