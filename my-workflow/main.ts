@@ -9,9 +9,10 @@ import {
   bytesToHex,
   hexToBytes,
 } from "@chainlink/cre-sdk";
-import type { APIPayload, Config, ValidateX402OPayload } from "./types/types";
+import type { APIPayload, ValidateX402OPayload } from "./types/types";
 import { ed25519 } from "@noble/curves/ed25519.js";
 
+type Config = {};
 type Runtime = TeeRuntime<Config>;
 
 const onHttpTrigger = async (
@@ -67,7 +68,7 @@ const validateApi = async (
   return result;
 };
 
-const initWorkflow = (config: Config) => {
+const initWorkflow = () => {
   const http = new cre.capabilities.HTTPCapability();
 
   return [cre.handlerInTee(http.trigger({}), onHttpTrigger, {})];
