@@ -30,14 +30,17 @@ const onHttpTrigger = async (
 };
 
 const callApi = (runtime: Runtime, api: APIPayload): string => {
+  const timestamp = runtime.now().getTime();
   const response = new HTTPClient()
     .sendRequest(runtime, {
       url: api.url,
       method: api.requestType,
       multiHeaders: {
         "content-type": { values: ["application/json"] },
-        "x-signature": { values: [sig(runtime, api.body)] },
-        timestamp: { values: [runtime.now().getTime().toString()] },
+        "x-signature": {
+          values: [sig(runtime, timestamp, api.body)],
+        },
+        timestamp: { values: [timestamp.toString()] },
       },
       body: api.body,
     })
@@ -77,10 +80,10 @@ export async function main() {
 
 main();
 
-const sig = (runtime: Runtime, body: string): string => {
+const sig = (runtime: Runtime, timestamp: number, body: string): string => {
   const signingSecret = runtime.getSecret({ id: "API_SIGNING_KEY" }).result();
   const payload = JSON.stringify({
-    timestamp: runtime.now().getTime(),
+    timestamp,
     body: body,
   });
   return bytesToHex(

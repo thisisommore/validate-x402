@@ -29,7 +29,9 @@ const server = createServer((req, res) => {
 
     let parsed;
     try {
+      console.log("body", body.toString());
       parsed = JSON.parse(body.toString());
+      console.log("parsed", parsed);
     } catch {
       return fail(400, "bad json");
     }
@@ -45,7 +47,7 @@ const server = createServer((req, res) => {
 
     const sigPayload = {
       timestamp,
-      body,
+      body: Buffer.from(body).toString("base64"),
     };
     if (
       typeof sigHex !== "string" ||
@@ -55,6 +57,7 @@ const server = createServer((req, res) => {
         hexToBytes(PUBKEY),
       )
     ) {
+      console.log("verify failed for ", JSON.stringify(sigPayload));
       return fail(401, "invalid signature");
     }
     console.log(`200 ok, signed payload:`, parsed);
