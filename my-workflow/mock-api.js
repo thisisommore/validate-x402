@@ -3,6 +3,7 @@
 // WRONG_PUBKEY=1 node mock-api.js  -> uses a random pubkey (all requests 401)
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
+import { randomInt } from "node:crypto";
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { hexToBytes, bytesToHex } from "@noble/hashes/utils.js";
 
@@ -11,8 +12,13 @@ const cfg = JSON.parse(
 );
 const PUBKEY = process.env.WRONG_PUBKEY
   ? bytesToHex(ed25519.getPublicKey(ed25519.utils.randomSecretKey()))
-  : cfg.apiPublicKey;
+  : process.env.API_PUBKEY || cfg.apiPublicKey;
 const MAX_SKEW_MS = 60_000;
+
+const IMAGES = ["paint_high_small.png", "paint_low_small.png"].map((name) => ({
+  name,
+  data: readFileSync(new URL(`./test-images/${name}`, import.meta.url)),
+}));
 
 const server = createServer((req, res) => {
   const chunks = [];
@@ -60,12 +66,17 @@ const server = createServer((req, res) => {
       console.log("verify failed for ", JSON.stringify(sigPayload));
       return fail(401, "invalid signature");
     }
-    console.log(`200 ok, signed payload:`, parsed);
-    res.writeHead(200, { "content-type": "application/json" });
-    res.end(JSON.stringify({ status: "ok", accepted: parsed }));
+    const image = IMAGES[randomInt(IMAGES.length)];
+    console.log(`200 ok, serving ${image.name}, signed payload:`, parsed);
+    res.writeHead(200, {
+      "content-type": "image/png",
+      "x-image-name": image.name,
+    });
+    res.end(image.data);
   });
 });
 
-server.listen(3457, () =>
-  console.log(`mock API on :3457, expecting pubkey ${PUBKEY.slice(0, 16)}...`),
+const PORT = process.env.PORT || 3457;
+server.listen(PORT, () =>
+  console.log(`mock API on :${PORT}, expecting pubkey ${PUBKEY.slice(0, 16)}...`),
 );
