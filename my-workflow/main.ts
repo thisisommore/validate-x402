@@ -50,7 +50,7 @@ const callApi = (runtime: Runtime, api: APIPayload): string => {
 };
 
 const validateApi = async (
-  data: string,
+  apiResponse: string,
   validationFunction: string,
 ): Promise<boolean> => {
   //TODO remove async wrapper
